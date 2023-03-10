@@ -1,0 +1,9 @@
+{
+  "name": "demuyz-js",
+  "version": "0.0.1",
+  "description": "A (for now) CHIP-8 emulator leveraging ES6 features.",
+  "main": "index.js",
+  "repository": "git@github.com:DonkeyCo/demuyz-js.git",
+  "author": "DonkeyCo <duc.vongoc01@gmail.com>",
+  "license": "MIT"
+}
