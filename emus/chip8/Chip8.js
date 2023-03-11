@@ -37,12 +37,12 @@ class Chip8 extends Emulator {
 			MEMORY_SIZE, // memory
 			{
 				SYM_GENERAL_REG: BinarySize[REGISTER_SIZE](GENERAL_REGISTERS), // 16 8-Bit general registers
-				SYM_I_REG: BinarySize[16](1), // 1 16-Bit I register
-				SYM_VF_REG: BinarySize[REGISTER_SIZE](1), // 1 8-Bit VF register
-				SYM_DELAY_REG: BinarySize[REGISTER_SIZE](1), // 1 8-Bit Delay Register
-				SYM_SOUND_REG: BinarySize[REGISTER_SIZE](1), // 1 8-Bit Sound Register
-				SYM_PC_REG: BinarySize[16](1), // 1 16-Bit Program Counter
-				SYM_PC_REG: BinarySize[REGISTER_SIZE](1), // 1 8-Bit Stack Pointer
+				SYM_I_REG: 0x0, // 1 16-Bit I register
+				SYM_VF_REG: 0x0, // 1 8-Bit VF register
+				SYM_DELAY_REG: 0x0, // 1 8-Bit Delay Register
+				SYM_SOUND_REG: 0x0, // 1 8-Bit Sound Register
+				SYM_PC_REG: 0x0, // 1 16-Bit Program Counter
+				SYM_PC_REG: 0x0, // 1 8-Bit Stack Pointer
 			}, // registers
 			{}, // inputs
 			{}, // outputs
