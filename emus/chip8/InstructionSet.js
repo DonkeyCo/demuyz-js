@@ -3,10 +3,10 @@ import { Registers } from "./Chip8";
 export const InstructionSet = {
 	EXIT_N: {
 		opcode: 	0x0010,
-		mask:			0x1110,
+		mask:		0x1110,
 		register:	[],
 		value:		[0x0001],
-		desc:			"Exit emulator with a return value of N.",
+		desc:		"Exit emulator with a return value of N.",
 		execute:	(value, registers) => {
 			console.log(desc);
 			throw new Error(value);
@@ -14,20 +14,20 @@ export const InstructionSet = {
 	},
 	CLS: {
 		opcode:		0x00E0,
-		mask:			0x1111,
+		mask:		0x1111,
 		register:	[],
 		value:		[],
-		desc:			"Clear the display. Sets all pixels to off.",
+		desc:		"Clear the display. Sets all pixels to off.",
 		execute:	(value, registers) => {
 			console.log(desc);
 		}
 	},
 	RET: {
 		opcode:		0x00EE,
-		mask:			0x1111,
+		mask:		0x1111,
 		register:	[],
 		value:		[],
-		desc:			"Return from subroutine. Set PC to the address at the top of the stack and subtract 1 from the SP.",
+		desc:		"Return from subroutine. Set PC to the address at the top of the stack and subtract 1 from the SP.",
 		execute:	(value, registers) => {
 			console.log(desc);
 			this.registers[Registers.PC] = this.stack[this.stack.length - 1];
@@ -36,30 +36,30 @@ export const InstructionSet = {
 	},
 	COMPAT: {
 		opcode:		0x00FA,
-		mask:			0x1111,
+		mask:		0x1111,
 		register:	[],
 		value:		[],
-		desc:			"Non-standard. Toggles changing of the I register by save (FX55) and restore (FX65) opcodes.",
+		desc:		"Non-standard. Toggles changing of the I register by save (FX55) and restore (FX65) opcodes.",
 		execute:	(value, registers) => {
 			console.log(desc);
 		}
 	},
 	CALL_NNN_M: {
 		opcode:		0x0000,
-		mask:			0x1000,
+		mask:		0x1000,
 		register:	[],
 		value:		[0x0111],
-		desc:			"Call machine language subroutine at address NNN.",
+		desc:		"Call machine language subroutine at address NNN.",
 		execute:	(value, registers) => {
 			console.log(desc);
 		}
 	},
 	JMP_NNN: {
 		opcode:		0x1000,
-		mask:			0x1000,
+		mask:		0x1000,
 		register:	[],
 		value:		[0x0111],
-		desc:			"Set PC to NNN.",
+		desc:		"Set PC to NNN.",
 		execute:	(value, registers) => {
 			console.log(desc);
 			this.registers[Registers.PC] = value;
@@ -67,10 +67,10 @@ export const InstructionSet = {
 	},
 	CALL_NNN_SR: {
 		opcode:		0x2000,
-		mask:			0x1000,
+		mask:		0x1000,
 		register:	[],
 		value:		[0x0111],
-		desc:			"Call subroutine at NNN. Increment the SP and put the current PC value on the top of the stack. Then set the PC to NNN. Generally there is a limit of 16 successive calls.",
+		desc:		"Call subroutine at NNN. Increment the SP and put the current PC value on the top of the stack. Then set the PC to NNN. Generally there is a limit of 16 successive calls.",
 		execute:	(value, registers) => {
 			console.log(desc);
 			if (this.registers[Registers.SP] == 15) {
@@ -83,10 +83,10 @@ export const InstructionSet = {
 	},
 	SE_VX_NN: {
 		opcode:		0x3000,
-		mask:			0x1000,
+		mask:		0x1000,
 		register:	[0x0100],
 		value:		[0x0011],
-		desc:			"Skip the next instruction if register VX is equal to NN.",
+		desc:		"Skip the next instruction if register VX is equal to NN.",
 		execute:	(value, registers) => {
 			console.log(desc);
 			registers[0] == value ? this.registers[Registers.PC] += 2 : 0;
@@ -94,10 +94,10 @@ export const InstructionSet = {
 	},
 	SNE_VX_NN: {
 		opcode:		0x4000,
-		mask:			0x1000,
+		mask:		0x1000,
 		register:	[0x0100],
 		value:		[0x0011],
-		desc:			"Skip the next instruction if register VX is not equal to NN.",
+		desc:		"Skip the next instruction if register VX is not equal to NN.",
 		execute:	(value, registers) => {
 			console.log(desc);
 			registers[0] != value ? this.registers[Registers.PC] += 2 : 0;
@@ -105,10 +105,10 @@ export const InstructionSet = {
 	},
 	SE_VX_VY: {
 		opcode:		0x5000,
-		mask:			0x1001,
+		mask:		0x1001,
 		register:	[0x0100, 0x0010],
 		value:		[],
-		desc:			"Skip the next instruction if register VX equals VY.",
+		desc:		"Skip the next instruction if register VX equals VY.",
 		execute:	(value, registers) => {
 			console.log(desc);
 			registers[0] == registers[1] ? this.registers[Registers.PC] += 2 : 0;
@@ -116,10 +116,10 @@ export const InstructionSet = {
 	},
 	LD_VX_NN: {
 		opcode:		0x6000,
-		mask:			0x1000,
+		mask:		0x1000,
 		register:	[0x0100],
 		value:		[0x0011],
-		desc:			"Load immediate value NN into register VX.",
+		desc:		"Load immediate value NN into register VX.",
 		execute:	(value, registers) => {
 			console.log(desc);
 			registers[0] = value;
@@ -127,10 +127,10 @@ export const InstructionSet = {
 	},
 	ADD_VX_NN: {
 		opcode:		0x7000,
-		mask:			0x1000,
+		mask:		0x1000,
 		register:	[0x0100, 0x0010],
 		value:		[0x0011],
-		desc:			"Add immediate value NN to register VX. Does not effect VF.",
+		desc:		"Add immediate value NN to register VX. Does not effect VF.",
 		execute:	(value, registers) => {
 			console.log(desc);
 			registers[0] += value;
@@ -138,10 +138,10 @@ export const InstructionSet = {
 	},
 	LD_VX_VY: {
 		opcode:		0x8000,
-		mask:			0x1001,
+		mask:		0x1001,
 		register:	[0x0100, 0x0010],
 		value:		[],
-		desc:			"Copy the value in register VY into VX.",
+		desc:		"Copy the value in register VY into VX.",
 		execute:	(value, registers) => {
 			console.log(desc);
 			registers[0] = registers[1];
@@ -149,10 +149,10 @@ export const InstructionSet = {
 	},
 	OR_VX_VY: {
 		opcode:		0x8001,
-		mask:			0x1001,
+		mask:		0x1001,
 		register:	[0x0100, 0x0010],
 		value:		[],
-		desc:			"Set VX equal to the bitwise or of the values in VX and VY.",
+		desc:		"Set VX equal to the bitwise or of the values in VX and VY.",
 		execute:	(value, registers) => {
 			console.log(desc);
 			registers[0] |= registers[1];
@@ -160,10 +160,10 @@ export const InstructionSet = {
 	},
 	AND_VX_VY: {
 		opcode:		0x8002,
-		mask:			0x1001,
+		mask:		0x1001,
 		register:	[0x0100, 0x0010],
 		value:		[],
-		desc:			"Set VX equal to the bitwise and of the values in VX and VY.",
+		desc:		"Set VX equal to the bitwise and of the values in VX and VY.",
 		execute:	(value, registers) => {
 			console.log(desc);
 			registers[0] &= registers[1];
@@ -171,10 +171,10 @@ export const InstructionSet = {
 	},
 	XOR_VX_VY: {
 		opcode:		0x8003,
-		mask:			0x1001,
+		mask:		0x1001,
 		register:	[0x0100, 0x0010],
 		value:		[],
-		desc:			"Set VX equal to the bitwise xor of the values in VX and VY.",
+		desc:		"Set VX equal to the bitwise xor of the values in VX and VY.",
 		execute:	(value, registers) => {
 			console.log(desc);
 			registers[0] ^= registers[1];
@@ -182,10 +182,10 @@ export const InstructionSet = {
 	},
 	ADD_VX_VY: {
 		opcode:		0x8004,
-		mask:			0x1001,
+		mask:		0x1001,
 		register:	[0x0100, 0x0010],
 		value:		[],
-		desc:			"Set VX equal to VX plus VY. In the case of an overflow VF is set to 1. Otherwise 0.",
+		desc:		"Set VX equal to VX plus VY. In the case of an overflow VF is set to 1. Otherwise 0.",
 		execute:	(value, registers) => {
 			console.log(desc);
 			registers[0] += registers[1];
@@ -194,10 +194,10 @@ export const InstructionSet = {
 	},
 	SUB_VX_VY: {
 		opcode:		0x8005,
-		mask:			0x1001,
+		mask:		0x1001,
 		register:	[0x0100, 0x0010],
 		value:		[],
-		desc:			"Set VX equal to VX minus VY. In the case of an underflow VF is set to 0. Otherwise 1.",
+		desc:		"Set VX equal to VX minus VY. In the case of an underflow VF is set to 0. Otherwise 1.",
 		execute:	(value, registers) => {
 			console.log(desc);
 			registers[0] += registers[1];
@@ -206,26 +206,94 @@ export const InstructionSet = {
 	},
 	SHR_VX_VY: {
 		opcode:		0x8006,
-		mask:			0x1001,
+		mask:		0x1001,
 		register:	[0x0100, 0x0010],
 		value:		[],
-		desc:			"Set VX equal to VX bitshifted right 1. VF is set to the least significant bit of VX prior to the shift.",
+		desc:		"Set VX equal to VX bitshifted right 1. VF is set to the least significant bit of VX prior to the shift.",
 		execute:	(value, registers) => {
 			console.log(desc);
-			registers[Registers.VF] = registers[0]
+			registers[Registers.VF] = registers[0] & 1;
 			registers[0] >>>= 1;
 		}
 	},
 	SUBN_VX_VY: {
-		opcode:		0x8008,
-		mask:			0x1001,
+		opcode:		0x8007,
+		mask:		0x1001,
 		register:	[0x0100, 0x0010],
 		value:		[],
-		desc:			"Set VX equal to VY minus VX. VF is set to 1 if VY > VX. Otherwise 0.",
+		desc:		"Set VX equal to VY minus VX. VF is set to 1 if VY > VX. Otherwise 0.",
 		execute:	(value, registers) => {
 			console.log(desc);
 			registers[0] = registers[1] - registers[0];
 			this.registers[Registers.VF] = registers[1] > registers[0] ? 1 : 0;
+		}
+	},
+	SHL_VX_VY: {
+		opcode:		0x800E,
+		mask:		0x1001,
+		register:	[0x0100, 0x0010],
+		value:		[],
+		desc:		"Set VX equal to VX bitshifted left 1. VF is set to the most significant bit of VX prior to the shift.",
+		execute:	(value, registers) => {
+			console.log(desc);
+			this.registers[Registers.VF] = registers[0] >> 7;
+			registers[0] <<= 1;
+		}
+	},
+	SNE_VX_VY: {
+		opcode:		0x9000,
+		mask:		0x1001,
+		register:	[0x0100, 0x0010],
+		value:		[],
+		desc:		"Skip the next instruction if VX does not equal VY.",
+		execute:	(value, registers) => {
+			console.log(desc);
+			registers[0] == registers[0] != registers[1] ? this.registers[Registers.PC] += 2 : 0;
+		}
+	},
+	LD_I_NNN: {
+		opcode:		0xA000,
+		mask:		0x1000,
+		register:	[],
+		value:		[0x0111],
+		desc:		"Set I equal to NNN.",
+		execute:	(value, registers) => {
+			console.log(desc);
+			this.registers[Registers.I] = value;
+		}
+	},
+	JMP_V0_NNN: {
+		opcode:		0xB000,
+		mask:		0x1000,
+		register:	[],
+		value:		[0x0111],
+		desc:		"Set the PC to NNN plus the value in V0.",
+		execute:	(value, registers) => {
+			console.log(desc);
+			this.registers[Registers.PC] = value + this.registers[Registers.General][0]; 
+		}
+	},
+	RND_VX_NN: {
+		opcode:		0xC000,
+		mask:		0x1000,
+		register:	[0x0100],
+		value:		[0x0011],
+		desc:		"Set VX equal to a random number ranging from 0 to 255 which is logically anded with NN.",
+		execute:	(value, registers) => {
+			console.log(desc);
+			const random = Math.floor(Math.random() * 255);
+			registers[0] = random & value;
+		}
+	},
+	DRW_VX_VY_N: {
+		opcode:		0xD000,
+		mask:		0x1000,
+		register:	[0x0100, 0x0010],
+		value:		[0x0001],
+		desc:		"Display N-byte sprite starting at memory location I at (VX, VY). Each set bit of xored with what's already drawn. VF is set to 1 if a collision occurs. 0 otherwise.",
+		execute:	(value, registers) => {
+			console.log(desc);
+			// TODO: Do some display magic
 		}
 	},
 };
