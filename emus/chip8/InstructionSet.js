@@ -296,4 +296,48 @@ export const InstructionSet = {
 			// TODO: Do some display magic
 		}
 	},
+	SKP_VX: {
+		opcode:		0xE09E,
+		mask:		0x1011,
+		register:	[0x0100],
+		value:		[],
+		desc:		"Skip the following instruction if the key represented by the value in VX is pressed.",
+		execute:	(value, registers) => {
+			console.log(desc);
+			// TODO: Check keyboard press and then skip
+		}
+	},
+	SKNP_VX: {
+		opcode:		0xE0A1,
+		mask:		0x1011,
+		register:	[0x0100],
+		value:		[],
+		desc:		"Skip the following instruction if the key represented by the value in VX is not pressed.",
+		execute:	(value, registers) => {
+			console.log(desc);
+			// TODO: Check keyboard press and then skip
+		}
+	},
+	LD_VX_DT: {
+		opcode:		0xF007,
+		mask:		0x1011,
+		register:	[0x0100],
+		value:		[],
+		desc:		"Set VX equal to the delay timer.",
+		execute:	(value, registers) => {
+			console.log(desc);
+			registers[0] = this.registers[Registers.Delay];
+		}
+	},
+	LD_VX_KEY: {
+		opcode:		0xF007,
+		mask:		0x1011,
+		register:	[0x0100],
+		value:		[],
+		desc:		"Wait for a key press and store the value of the key into VX.",
+		execute:	(value, registers) => {
+			console.log(desc);
+			// Do some magic here
+		}
+	},
 };
