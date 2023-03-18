@@ -1,4 +1,4 @@
-import { BinarySize } from "./MemoryMap";
+import { BinarySize } from "./MemoryMap.js";
 
 class Emulator {
 	static REGISTER_SIZE = 8;
@@ -13,7 +13,7 @@ class Emulator {
 	 * @param {Object} timers map of timers
 	 */
 	constructor(memory, registers, inputs, outputs, timers) {
-		this.memory = BinarySize[MEMORY_UNIT](memory);
+		this.memory = new BinarySize[Emulator.MEMORY_UNIT](memory);
 		this.registers = registers;
 		this.inputs = inputs;
 		this.outputs = outputs;
