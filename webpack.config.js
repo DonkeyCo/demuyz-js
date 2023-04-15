@@ -2,7 +2,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require("path");
 
 module.exports = {
-	mode: "production",
+	mode: "development",
 	entry: {
 		emus: "./emus/modules.js",
 		main: "./public/index.js"
@@ -18,16 +18,16 @@ module.exports = {
 	module: {
 		rules: [
 			{
-			test: /\.(?:js|mjs|cjs)$/,
-			exclude: /node_modules/,
-			use: {
-				loader: 'babel-loader',
-				options: {
-				presets: [
-					['@babel/preset-env', { targets: "defaults" }]
-				]
+				test: /\.(?:js|mjs|cjs)$/,
+				exclude: /node_modules/,
+				use: {
+					loader: 'babel-loader',
+					options: {
+						presets: [
+							['@babel/preset-env', { targets: "defaults" }]
+						]
+					}
 				}
-			}
 			}
 		]
 	},
@@ -46,6 +46,6 @@ module.exports = {
 		})
 	],
 	optimization: {
-        minimize: false // TODO
-    },
+		minimize: false // TODO
+	}
 }

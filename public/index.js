@@ -1,18 +1,21 @@
-import Display from "../emus/general/Display.js";
+import Display from "../emus/chip8/Display.js";
 
 window.onload = () => {
-	const factor = 5;
-	let demuyz = new Display("container", 120, 120, factor);
+	const factor = 7;
+	let demuyz = new Display("container", factor);
 	console.log(demuyz);
 
+	demuyz.drawFrame();
 	document.getElementById("clear").addEventListener("click", () => {
 		console.log(`Clearing display`);
 		demuyz.clear();
+		demuyz.drawFrame();
 	});
 
 	document.getElementById("drawLine").addEventListener("click", () => {
-		for (let i = 0; i < 120 * factor; i++) {
-			demuyz.drawPixel(i, 60, "red");
+		for (let i = 0; i < demuyz.width; i++) {
+			demuyz.setPixel(i, i, 1);
 		}
+		demuyz.drawFrame();
 	});
 };

@@ -28,6 +28,7 @@ export const InstructionSet = {
 		desc:		"Clear the display. Sets all pixels to off.",
 		execute (cpu, value, registers) {
 			console.log(this.desc);
+			cpu.display.clear();
 			nextInstruction(cpu);
 		}
 	},
