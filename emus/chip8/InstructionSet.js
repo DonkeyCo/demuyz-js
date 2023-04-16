@@ -15,6 +15,7 @@ export const InstructionSet = {
 		register:	[],
 		value:		[0x000F],
 		desc:		"Exit emulator with a return value of N.",
+		
 		execute	(cpu, value, registers) {
 			console.log(this.desc);
 			throw Error(value);
@@ -28,7 +29,7 @@ export const InstructionSet = {
 		desc:		"Clear the display. Sets all pixels to off.",
 		execute (cpu, value, registers) {
 			console.log(this.desc);
-			cpu.display.clear();
+			cpu.outputs.display.clear();
 			nextInstruction(cpu);
 		}
 	},
@@ -40,8 +41,9 @@ export const InstructionSet = {
 		desc:		"Return from subroutine. Set PC to the address at the top of the stack and subtract 1 from the SP.",
 		execute (cpu, value, registers) {
 			console.log(this.desc);
-			cpu.registers[Registers.PC] = cpu.stack[Registers.SP];
+			cpu.registers[Registers.PC] = cpu.stack[cpu.registers[Registers.SP] - 1];
 			cpu.registers[Registers.SP]--;
+
 		}
 	},
 	COMPAT: {
@@ -66,7 +68,7 @@ export const InstructionSet = {
 			if (cpu.registers[Registers.SP] == 15) {
 				throw new Error("StackOverflowError");
 			}
-			cpu.stack[cpu.registers[Registers.SP]] = cpu.registers[Registers.PC];
+			cpu.stack[cpu.registers[Registers.SP]] = cpu.registers[Registers.PC] + 2; // Take address after PC, otherwise loop
 			cpu.registers[Registers.SP]++;
 			cpu.registers[Registers.PC] = value;
 		}
@@ -78,7 +80,7 @@ export const InstructionSet = {
 		value:		[0x0FFF],
 		desc:		"Set PC to NNN.",
 		execute (cpu, value, registers) {
-			console.log(this.desc);
+			console.log(this.desc, value);
 			cpu.registers[Registers.PC] = value;
 		}
 	},
@@ -89,11 +91,11 @@ export const InstructionSet = {
 		value:		[0x0FFF],
 		desc:		"Call subroutine at NNN. Increment the SP and put the current PC value on the top of the stack. Then set the PC to NNN. Generally there is a limit of 16 successive calls.",
 		execute (cpu, value, registers) {
-			console.log(this.desc);
+			console.log(this.desc, value);
 			if (cpu.registers[Registers.SP] == 15) {
 				throw new Error("StackOverflowError");
 			}
-			cpu.stack[cpu.registers[Registers.SP]] = cpu.registers[Registers.PC];
+			cpu.stack[cpu.registers[Registers.SP]] = cpu.registers[Registers.PC] + 2;
 			cpu.registers[Registers.SP]++;
 			cpu.registers[Registers.PC] = value;
 		}
@@ -139,9 +141,7 @@ export const InstructionSet = {
 		desc:		"Load immediate value NN into register VX.",
 		execute (cpu, value, registers) {
 			console.log(this.desc);
-			console.log(cpu.registers[Registers.General][registers[0]]);
 			cpu.registers[Registers.General][registers[0]] = value;
-			console.log(cpu.registers[Registers.General][registers[0]]);
 			nextInstruction(cpu);
 		}
 	},
@@ -288,7 +288,7 @@ export const InstructionSet = {
 		value:		[0x0FFF],
 		desc:		"Set I equal to NNN.",
 		execute (cpu, value, registers) {
-			console.log(this.desc);
+			console.log(this.desc, value);
 			cpu.registers[Registers.I] = value;
 			nextInstruction(cpu);
 		}
@@ -326,7 +326,26 @@ export const InstructionSet = {
 		desc:		"Display N-byte sprite starting at memory location I at (VX, VY). Each set bit of xored with what's already drawn. VF is set to 1 if a collision occurs. 0 otherwise.",
 		execute (cpu, value, registers) {
 			console.log(this.desc);
-			// TODO: Do some display magic
+
+			let origX = cpu.registers[Registers.General][registers[0]];
+			let origY = cpu.registers[Registers.General][registers[1]];
+			let location = cpu.registers[Registers.I];
+			// value is n bytes
+
+			console.log(`Draw Sprite of length ${value} beginning at x: ${origX}, y: ${origY}`);
+			for (let i = 0; i < value; i++) {
+				let spriteRow = cpu.memory[location + i];
+				for (let j = 7; j >= 0; j--) {
+					let spriteBit = (spriteRow >> j) & 1;
+
+					let x = (origX + 7 - j) % cpu.outputs.display.width;
+					let y = (origY + i) % cpu.outputs.display.height;
+					const collision = cpu.outputs.display.setPixel(x, y, spriteBit);
+					cpu.registers[Registers.VF] = +collision;
+				}
+			}
+		
+			cpu.outputs.display.drawFrame();
 			nextInstruction(cpu);
 		}
 	},
@@ -442,7 +461,7 @@ export const InstructionSet = {
 		execute (cpu, value, registers) {
 			console.log(this.desc);
 
-			const i = cpu.register[Registers.I];
+			const i = cpu.registers[Registers.I];
 			cpu.memory[i] = Math.floor(value / 100);
 			cpu.memory[i + 1] = Math.floor(value / 10);
 			cpu.memory[i + 2] = value % 10;
@@ -459,8 +478,8 @@ export const InstructionSet = {
 		execute (cpu, value, registers) {
 			console.log(this.desc);
 
-			let general = registers[Registers.General];
-			const i = registers[Registers.I];
+			let general = cpu.registers[Registers.General];
+			const i = cpu.registers[Registers.I];
 			for (let v = 0; v <= registers[0]; v++) {
 				cpu.memory[i + v] = general[v];
 			}

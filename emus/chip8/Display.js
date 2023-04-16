@@ -6,7 +6,9 @@ export default class Display extends BaseDisplay {
   }
 
 	setPixel(x, y, value) {
-		this.frameBuffer[x][y] ^= value;
+    const collision = this.frameBuffer[x][y] & value;
+    this.frameBuffer[x][y] ^= value;
+    return !!collision;
 	}
 
   getColor(value) {

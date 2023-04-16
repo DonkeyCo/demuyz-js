@@ -1,7 +1,7 @@
 import Emulator from "../general/Emulator.js";
 import { BinarySize } from "../general/MemoryMap.js";
+import Display from "./Display.js";
 import { InstructionSet } from "./InstructionSet.js";
-import { ROM } from "./ROM.js";
 
 const SYM_GENERAL_REG = Symbol("chip8_general");
 const SYM_I_REG = Symbol("chip8_I");
@@ -33,8 +33,9 @@ class Chip8 extends Emulator {
 
 	static MEMORY_SIZE = 4096;
 	static GENERAL_REGISTERS = 16;
+	static START_ADDRESS = 0x200;
 	
-	constructor() {
+	constructor(container, factor) {
 		super(
 			Chip8.MEMORY_SIZE, // memory
 			{
@@ -43,11 +44,13 @@ class Chip8 extends Emulator {
 				[Registers.VF]: 0x0, // 1 8-Bit VF register
 				[Registers.Delay]: 0x0, // 1 8-Bit Delay Register
 				[Registers.Sound]: 0x0, // 1 8-Bit Sound Register
-				[Registers.PC]: 0x0, // 1 16-Bit Program Counter
+				[Registers.PC]: Chip8.START_ADDRESS, // 1 16-Bit Program Counter
 				[Registers.SP]: 0x0, // 1 8-Bit Stack Pointer
 			}, // registers
 			{}, // inputs
-			{}, // outputs
+			{
+				display: new Display(container, factor)
+			}, // outputs
 			{}, // timers
 		);
 		this.stack = new BinarySize[16](16); // Stack (16 16-bit)
@@ -55,18 +58,20 @@ class Chip8 extends Emulator {
 
 	loadRom(rom) {
 		console.log(rom);
-		this.rom = new ROM(rom);
+		for (let i = 0; i < rom.length; i++) {
+			this.memory[Chip8.START_ADDRESS + i] = rom[i]; 
+		}
 	}
 
 	cycle() {
 		let code = this.fetch();
-		console.log(code.toString(16))
 		let {value, registers, instruction} = this.decode(code);
 		this.execute(instruction, value, registers);
 	}
 
 	fetch() {
-		return this.rom.fetchInstruction(this.registers[Registers.PC]);
+		let pc = this.registers[Registers.PC];
+		return this.memory[pc] << 8 | this.memory[pc+1];
 	}
 
 	decode(code) {

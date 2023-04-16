@@ -47,5 +47,8 @@ module.exports = {
 	],
 	optimization: {
 		minimize: false // TODO
+	},
+	resolve: {
+		modules: ['node_modules'],
 	}
 }
