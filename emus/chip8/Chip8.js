@@ -2,6 +2,7 @@ import Emulator from "../general/Emulator.js";
 import { BinarySize } from "../general/MemoryMap.js";
 import Display from "./Display.js";
 import { InstructionSet } from "./InstructionSet.js";
+import Keyboard from "./Keyboard.js";
 
 const SYM_GENERAL_REG = Symbol("chip8_general");
 const SYM_I_REG = Symbol("chip8_I");
@@ -47,7 +48,9 @@ class Chip8 extends Emulator {
 				[Registers.PC]: Chip8.START_ADDRESS, // 1 16-Bit Program Counter
 				[Registers.SP]: 0x0, // 1 8-Bit Stack Pointer
 			}, // registers
-			{}, // inputs
+			{
+				keyboard: new Keyboard()
+			}, // inputs
 			{
 				display: new Display(container, factor)
 			}, // outputs
@@ -57,10 +60,26 @@ class Chip8 extends Emulator {
 	}
 
 	loadRom(rom) {
-		console.log(rom);
 		for (let i = 0; i < rom.length; i++) {
 			this.memory[Chip8.START_ADDRESS + i] = rom[i]; 
 		}
+		this.inputs.keyboard.activate(); // Maybe move this into a setup routine 
+		this.reset();
+	}
+
+	reset() {
+		this.memory.map(x => 0);
+		this.registers[Registers.General] = new BinarySize[Chip8.REGISTER_SIZE](Chip8.GENERAL_REGISTERS);
+		this.registers[Registers.I] = 0x0;
+		this.registers[Registers.VF] = 0x0;
+		this.registers[Registers.Delay] = 0x0;
+		this.registers[Registers.Sound] = 0x0;
+		this.registers[Registers.PC] = Chip8.START_ADDRESS;
+		this.registers[Registers.SP] = 0x0;
+
+		this.stack = new BinarySize[16](16);
+		
+		this.outputs.display.clear();
 	}
 
 	cycle() {

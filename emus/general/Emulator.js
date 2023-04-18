@@ -19,6 +19,12 @@ class Emulator {
 		this.outputs = outputs;
 		this.timers = timers;
 	}
+
+	loadRom() { throw Error("Not yet implemented") }
+	reset() { throw Error("Not yet impelemented") }
+	fetch() { throw Error("Not yet impelemented") }
+	decode() { throw Error("Not yet impelemented") }
+	execute() { throw Error("Not yet impelemented") }
 }
 
 export default Emulator;

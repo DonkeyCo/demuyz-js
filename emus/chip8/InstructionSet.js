@@ -53,6 +53,7 @@ export const InstructionSet = {
 		value:		[],
 		desc:		"Non-standard. Toggles changing of the I register by save (FX55) and restore (FX65) opcodes.",
 		execute (cpu, value, registers) {
+			// TODO
 			console.log(this.desc);
 			nextInstruction(cpu);
 		}
@@ -369,8 +370,13 @@ export const InstructionSet = {
 		desc:		"Skip the following instruction if the key represented by the value in VX is not pressed.",
 		execute (cpu, value, registers) {
 			console.log(this.desc);
-			// TODO: Check keyboard press and then skip
-			skipInstruction(cpu);
+
+			let expected = cpu.registers[Registers.General][registers[0]];
+			if (expected == cpu.inputs.keyboard.pressedKey) {
+				skipInstruction(cpu);
+			} else {
+				nextInstruction(cpu);
+			}
 		}
 	},
 	LD_VX_DT: {
