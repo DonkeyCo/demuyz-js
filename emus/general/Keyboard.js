@@ -20,6 +20,7 @@ export default class Keyboard {
 	setKey(event) {
 		let key = this.keyMap[event.key];
 		if (key != undefined) {
+			console.log(`Key pressed: ${key}`);
 			this.keys = key;
 			this.isPressed = true;
 		}
@@ -35,7 +36,6 @@ export default class Keyboard {
 			return this.keys;
 		}
 	}
-
 
 	get keyMap() {
 		throw Error("keyMap getter not implemented");

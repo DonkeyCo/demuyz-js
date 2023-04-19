@@ -60,11 +60,11 @@ class Chip8 extends Emulator {
 	}
 
 	loadRom(rom) {
+		this.reset();
 		for (let i = 0; i < rom.length; i++) {
 			this.memory[Chip8.START_ADDRESS + i] = rom[i]; 
 		}
-		this.inputs.keyboard.activate(); // Maybe move this into a setup routine 
-		this.reset();
+		this.inputs.keyboard.activate(); // Maybe move this into a setup routine
 	}
 
 	reset() {
@@ -82,14 +82,40 @@ class Chip8 extends Emulator {
 		this.outputs.display.clear();
 	}
 
+	run() {
+		this.halted = false;
+		this.cycle();
+	}
+
 	cycle() {
+		if (this.halted) {
+			return;
+		}
+
 		let code = this.fetch();
 		let {value, registers, instruction} = this.decode(code);
 		this.execute(instruction, value, registers);
+
+		if (this.registers[Registers.Delay] > 0) {
+			this.registers[Registers.Delay]--;
+		}
+		if (this.registers[Registers.Sound] > 0) {
+			this.registers[Registers.Sound]--;
+		}
+
+		setTimeout(this.cycle.bind(this), 2);
 	}
+
+	// 60 / 1 = 60
 
 	fetch() {
 		let pc = this.registers[Registers.PC];
+
+		if (pc > 4096) {
+			this.halted = true;
+			throw Error("Program ran out of bounds");
+		}
+
 		return this.memory[pc] << 8 | this.memory[pc+1];
 	}
 

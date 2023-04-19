@@ -18,10 +18,7 @@ window.onload = () => {
 	
 				let i = 0;
 				const limit = rom.length;
-				while (i < limit) {
-					chip8.cycle();
-					i++;
-				}
+				chip8.run();
 			});
 		}
 	});

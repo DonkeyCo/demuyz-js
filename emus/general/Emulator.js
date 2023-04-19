@@ -18,6 +18,7 @@ class Emulator {
 		this.inputs = inputs;
 		this.outputs = outputs;
 		this.timers = timers;
+		this.halted = true;
 	}
 
 	loadRom() { throw Error("Not yet implemented") }

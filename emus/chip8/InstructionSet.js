@@ -166,7 +166,7 @@ export const InstructionSet = {
 		desc:		"Copy the value in register VY into VX.",
 		execute (cpu, value, registers) {
 			console.log(this.desc);
-			cpu.registers[Registers.General][registers[0]] = registers[1];
+			cpu.registers[Registers.General][registers[0]] = cpu.registers[Registers.General][registers[1]];
 			nextInstruction(cpu);
 		}
 	},
@@ -178,7 +178,7 @@ export const InstructionSet = {
 		desc:		"Set VX equal to the bitwise or of the values in VX and VY.",
 		execute (cpu, value, registers) {
 			console.log(this.desc);
-			cpu.registers[Registers.General][registers[0]] |= registers[1];
+			cpu.registers[Registers.General][registers[0]] |= cpu.registers[Registers.General][registers[1]];
 			nextInstruction(cpu);
 		}
 	},
@@ -190,7 +190,7 @@ export const InstructionSet = {
 		desc:		"Set VX equal to the bitwise and of the values in VX and VY.",
 		execute (cpu, value, registers) {
 			console.log(this.desc);
-			cpu.registers[Registers.General][registers[0]] &= registers[1];
+			cpu.registers[Registers.General][registers[0]] &= cpu.registers[Registers.General][registers[1]];
 			nextInstruction(cpu);
 		}
 	},
@@ -202,7 +202,7 @@ export const InstructionSet = {
 		desc:		"Set VX equal to the bitwise xor of the values in VX and VY.",
 		execute (cpu, value, registers) {
 			console.log(this.desc);
-			cpu.registers[Registers.General][registers[0]] ^= registers[1];
+			cpu.registers[Registers.General][registers[0]] ^= cpu.registers[Registers.General][registers[1]];
 			nextInstruction(cpu);
 		}
 	},
@@ -213,9 +213,13 @@ export const InstructionSet = {
 		value:		[],
 		desc:		"Set VX equal to VX plus VY. In the case of an overflow VF is set to 1. Otherwise 0.",
 		execute (cpu, value, registers) {
-			console.log(this.desc);
-			cpu.registers[Registers.General][registers[0]] += registers[1];
-			cpu.registers[Registers.VF] = cpu.registers[Registers.General][registers[0]] > 0xFF ? 1 : 0;
+			let vx = cpu.registers[Registers.General][registers[0]];
+			let vy = cpu.registers[Registers.General][registers[1]];
+
+			console.log(this.desc, vx, vy, (vx + vy).toString(16));
+
+			cpu.registers[Registers.General][registers[0]] += vy;
+			cpu.registers[Registers.VF] = vx + vy > 0xFF ? 1 : 0;
 			nextInstruction(cpu);
 		}
 	},
@@ -226,9 +230,13 @@ export const InstructionSet = {
 		value:		[],
 		desc:		"Set VX equal to VX minus VY. In the case of an underflow VF is set to 0. Otherwise 1.",
 		execute (cpu, value, registers) {
-			console.log(this.desc);
-			cpu.registers[Registers.General][registers[0]] += registers[1];
-			cpu.registers[Registers.VF] = cpu.registers[Registers.General][registers[0]] > registers[1] ? 1 : 0;
+			let vx = cpu.registers[Registers.General][registers[0]];
+			let vy = cpu.registers[Registers.General][registers[1]];
+
+			console.log(this.desc, vx, vy, (vx - vy).toString(16));
+
+			cpu.registers[Registers.General][registers[0]] -= vy;
+			cpu.registers[Registers.VF] = vy > vx ? 1 : 0;
 			nextInstruction(cpu);
 		}
 	},
@@ -252,9 +260,13 @@ export const InstructionSet = {
 		value:		[],
 		desc:		"Set VX equal to VY minus VX. VF is set to 1 if VY > VX. Otherwise 0.",
 		execute (cpu, value, registers) {
-			console.log(this.desc);
-			cpu.registers[Registers.General][registers[0]] = registers[1] - cpu.registers[Registers.General][registers[0]];
-			cpu.registers[Registers.VF] = registers[1] > cpu.registers[Registers.General][registers[0]] ? 1 : 0;
+			let vx = cpu.registers[Registers.General][registers[0]];
+			let vy = cpu.registers[Registers.General][registers[1]];
+
+			console.log(this.desc, vx, vy, (vy - vx).toString(16));
+
+			cpu.registers[Registers.General][registers[0]] = vy - vx;
+			cpu.registers[Registers.VF] = vx > vy ? 1 : 0;
 			nextInstruction(cpu);
 		}
 	},
@@ -279,7 +291,7 @@ export const InstructionSet = {
 		desc:		"Skip the next instruction if VX does not equal VY.",
 		execute (cpu, value, registers) {
 			console.log(this.desc);
-			cpu.registers[Registers.General][registers[0]] == cpu.registers[Registers.General][registers[0]] != registers[1] ? skipInstruction(cpu) : nextInstruction(cpu);
+			cpu.registers[Registers.General][registers[0]] != cpu.registers[Registers.General][registers[1]] ? skipInstruction(cpu) : nextInstruction(cpu);
 		}
 	},
 	LD_I_NNN: {
@@ -358,8 +370,15 @@ export const InstructionSet = {
 		desc:		"Skip the following instruction if the key represented by the value in VX is pressed.",
 		execute (cpu, value, registers) {
 			console.log(this.desc);
-			// TODO: Check keyboard press and then skip
-			skipInstruction(cpu);
+
+			let key = cpu.inputs.keyboard.pressedKey;
+			let vx = cpu.registers[Registers.General][registers[0]];
+
+			if (key == vx) {
+				skipInstruction(cpu);
+			} else {
+				nextInstruction(cpu);
+			}
 		}
 	},
 	SKNP_VX: {
@@ -372,7 +391,7 @@ export const InstructionSet = {
 			console.log(this.desc);
 
 			let expected = cpu.registers[Registers.General][registers[0]];
-			if (expected == cpu.inputs.keyboard.pressedKey) {
+			if (expected != cpu.inputs.keyboard.pressedKey) {
 				skipInstruction(cpu);
 			} else {
 				nextInstruction(cpu);
@@ -399,7 +418,13 @@ export const InstructionSet = {
 		desc:		"Wait for a key press and store the value of the key into VX.",
 		execute (cpu, value, registers) {
 			console.log(this.desc);
-			// Do some magic here
+
+			let key = cpu.inputs.keyboard.pressedKey;
+			if (!key) {
+				return; // Emulates waiting. Do not go to next instruction
+			}
+
+			cpu.registers[Registers.General][registers[0]] = key;
 			nextInstruction(cpu);
 		}
 	},
@@ -467,10 +492,13 @@ export const InstructionSet = {
 		execute (cpu, value, registers) {
 			console.log(this.desc);
 
-			const i = cpu.registers[Registers.I];
-			cpu.memory[i] = Math.floor(value / 100);
-			cpu.memory[i + 1] = Math.floor(value / 10);
-			cpu.memory[i + 2] = value % 10;
+			let i = cpu.registers[Registers.I];
+			let bcd = cpu.registers[Registers.General][registers[0]];
+			cpu.memory[i] = Math.floor(bcd / 100);
+			cpu.memory[i + 1] = Math.floor(bcd / 10) % 10;
+			cpu.memory[i + 2] = bcd % 10;
+
+			console.log(cpu.memory[i], cpu.memory[i + 1], cpu.memory[i + 2]);
 
 			nextInstruction(cpu);
 		}
@@ -503,8 +531,9 @@ export const InstructionSet = {
 			console.log(this.desc);
 
 			let general = cpu.registers[Registers.General];
-			for (let v = cpu.registers[Registers.I]; v <= registers[0]; v++) {
-				general[v] = cpu.memory[v];
+			let memoryStart = cpu.registers[Registers.I];
+			for (let v = 0; v <= registers[0]; v++) {
+				general[v] = cpu.memory[v + memoryStart];
 			}
 
 			nextInstruction(cpu);
